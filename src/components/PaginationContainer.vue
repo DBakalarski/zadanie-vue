@@ -35,6 +35,11 @@ export default {
 <style scoped>
 .pagination-container {
   max-width: 800px;
-  margin: 20px auto;
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  left: 50%;
+  padding: 5px;
+  text-align: center;
 }
 </style>

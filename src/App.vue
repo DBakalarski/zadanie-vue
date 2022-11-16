@@ -1,8 +1,22 @@
 <template>
   <div class="app-container">
-    <SearchInput @on-search="handleSearchInput" />
-    <ListContainer :items="paginate(items)" />
+    <div class="filter-container">
+      <SearchInput
+        :is-clear="isSearchClear"
+        @clear-search="handleClearSearch"
+        @on-search="handleSearchInput"
+      />
+      <CategoryInput
+        :is-clear="isSelectClear"
+        @clear-select="handleClearSelect"
+        @on-select="handleSelect"
+      />
+    </div>
+
+    <Loader v-if="isLoading" />
+    <ListContainer v-else :items="paginate(items)" />
     <PaginationContainer
+      v-if="calculatePages > 1 && !isLoading"
       :length="calculatePages"
       @change-page="handleChangePage"
     />
@@ -14,6 +28,8 @@ import axios from 'axios';
 import ListContainer from './components/ListContainer.vue';
 import PaginationContainer from './components/PaginationContainer.vue';
 import SearchInput from './components/SearchInput.vue';
+import CategoryInput from './components/CategoryInput.vue';
+import Loader from './components/Loader.vue';
 
 export default {
   name: 'App',
@@ -21,12 +37,17 @@ export default {
     SearchInput,
     ListContainer,
     PaginationContainer,
+    CategoryInput,
+    Loader,
   },
   data() {
     return {
       pageNumber: 1,
       items: [],
       pageSize: 5,
+      isSelectClear: false,
+      isSearchClear: false,
+      isLoading: false,
     };
   },
   computed: {
@@ -38,16 +59,18 @@ export default {
     },
   },
   async created() {
-    const data = await this.getEntriesData();
-    this.items = data.entries;
+    this.getEntriesData();
   },
   methods: {
     async getEntriesData() {
       try {
+        this.isLoading = true;
         const res = await axios.get('https://api.publicapis.org/entries');
-        return res.data;
+        this.items = res.data.entries;
       } catch (error) {
         console.log(error.response);
+      } finally {
+        this.isLoading = false;
       }
     },
     paginate(data) {
@@ -61,7 +84,22 @@ export default {
       this.pageNumber = newPageNumber;
     },
     handleSearchInput(searchItems) {
+      this.isSelectClear = true;
+      this.isSearchClear = false;
+      this.pageNumber = 1;
       this.items = searchItems;
+    },
+    handleSelect(filteredItems) {
+      this.isSearchClear = true;
+      this.isSelectClear = false;
+      this.pageNumber = 1;
+      this.items = filteredItems;
+    },
+    async handleClearSelect() {
+      this.getEntriesData();
+    },
+    async handleClearSearch() {
+      this.getEntriesData();
     },
   },
 };
@@ -69,9 +107,20 @@ export default {
 
 <style scoped>
 .app-container {
-  margin: 20px auto;
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
+  min-height: 100vh;
+  /* margin: 20px auto; */
+  position: relative;
+  padding-bottom: 80px;
+}
+
+.filter-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+@media (min-width: 650px) {
+  .filter-container {
+    display: flex;
+    justify-content: center;
+  }
 }
 </style>

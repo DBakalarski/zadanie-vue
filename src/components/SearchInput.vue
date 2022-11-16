@@ -3,10 +3,12 @@
     v-model="searchValue"
     :loading="isLoading"
     :color="inputColor"
+    :clearable="true"
     class="search-input"
     label="Search"
     placeholder="Enter search phrase"
     @keyup="handleSearchValue"
+    @click:clear="handleClearInput"
   ></v-text-field>
 </template>
 
@@ -15,17 +17,31 @@ import axios from 'axios';
 
 export default {
   name: 'SerchInput',
-  emits: ['on-search'],
+  props: {
+    isClear: {
+      required: true,
+      type: Boolean,
+    },
+  },
+  emits: ['on-search', 'clear-search'],
   data() {
     return {
-      searchValue: '',
+      searchValue: null,
       isLoading: false,
       hasSearchResult: true,
     };
   },
+
   computed: {
     inputColor() {
       return this.hasSearchResult ? 'green' : 'red';
+    },
+  },
+  watch: {
+    isClear(newValue) {
+      if (newValue) {
+        this.searchValue = null;
+      }
     },
   },
   methods: {
@@ -45,10 +61,15 @@ export default {
     async handleSearchValue() {
       const searchItems = await this.getSearchData();
       this.$emit('on-search', searchItems.entries);
-      console.log('searchItems.entries', searchItems.entries);
+
       if (!searchItems.entries) {
         this.hasSearchResult = false;
       } else this.hasSearchResult = true;
+    },
+
+    handleClearInput() {
+      this.hasSearchResult = true;
+      this.$emit('clear-search');
     },
   },
 };
