@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div class="text-center pagination-container">
     <v-pagination
       v-model="pageNumber"
       :length="length"
@@ -32,4 +32,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.pagination-container {
+  max-width: 800px;
+  margin: 20px auto;
+}
+</style>

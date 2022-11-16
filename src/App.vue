@@ -1,19 +1,24 @@
 <template>
-  <ListContainer :items="paginate(items)" />
-  <PaginationContainer
-    :length="calculatePages"
-    @change-page="(newPageNumber) => handleChangePage(newPageNumber)"
-  />
+  <div class="app-container">
+    <SearchInput @on-search="handleSearchInput" />
+    <ListContainer :items="paginate(items)" />
+    <PaginationContainer
+      :length="calculatePages"
+      @change-page="handleChangePage"
+    />
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
 import ListContainer from './components/ListContainer.vue';
 import PaginationContainer from './components/PaginationContainer.vue';
+import SearchInput from './components/SearchInput.vue';
 
 export default {
   name: 'App',
   components: {
+    SearchInput,
     ListContainer,
     PaginationContainer,
   },
@@ -26,7 +31,7 @@ export default {
   },
   computed: {
     calculatePages() {
-      if (this.items.length) {
+      if (this.items) {
         return Math.floor(this.items.length / this.pageSize);
       }
       return 0;
@@ -46,6 +51,7 @@ export default {
       }
     },
     paginate(data) {
+      if (!data) return [];
       return data.slice(
         (this.pageNumber - 1) * this.pageSize,
         this.pageNumber * this.pageSize
@@ -54,8 +60,18 @@ export default {
     handleChangePage(newPageNumber) {
       this.pageNumber = newPageNumber;
     },
+    handleSearchInput(searchItems) {
+      this.items = searchItems;
+    },
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+.app-container {
+  margin: 20px auto;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+}
+</style>
