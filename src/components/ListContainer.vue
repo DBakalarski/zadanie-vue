@@ -1,13 +1,16 @@
 <template>
-  <div class="list">List</div>
-  <div v-for="item in items" :key="item.Link">
-    <p>{{ item.API }}</p>
-  </div>
+  <v-card class="mx-auto" max-width="600" tile>
+    <ListItem v-for="item in items" :key="item.Link" :item="item" />
+  </v-card>
 </template>
 
 <script>
+import ListItem from './ListItem.vue';
 export default {
   name: 'ListContainer',
+  components: {
+    ListItem,
+  },
   props: {
     items: {
       type: Array,

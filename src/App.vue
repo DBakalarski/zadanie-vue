@@ -1,21 +1,36 @@
 <template>
-  <h1>App</h1>
-  <ListContainerVue :items="paginate(items, 50, 1)" />
+  <ListContainer :items="paginate(items)" />
+  <PaginationContainer
+    :length="calculatePages"
+    @change-page="(newPageNumber) => handleChangePage(newPageNumber)"
+  />
 </template>
 
 <script>
 import axios from 'axios';
-import ListContainerVue from './components/ListContainer.vue';
+import ListContainer from './components/ListContainer.vue';
+import PaginationContainer from './components/PaginationContainer.vue';
 
 export default {
   name: 'App',
   components: {
-    ListContainerVue,
+    ListContainer,
+    PaginationContainer,
   },
   data() {
     return {
+      pageNumber: 1,
       items: [],
+      pageSize: 5,
     };
+  },
+  computed: {
+    calculatePages() {
+      if (this.items.length) {
+        return Math.floor(this.items.length / this.pageSize);
+      }
+      return 0;
+    },
   },
   async created() {
     const data = await this.getEntriesData();
@@ -30,8 +45,14 @@ export default {
         console.log(error.response);
       }
     },
-    paginate(data, pageSize, pageNumber) {
-      return data.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+    paginate(data) {
+      return data.slice(
+        (this.pageNumber - 1) * this.pageSize,
+        this.pageNumber * this.pageSize
+      );
+    },
+    handleChangePage(newPageNumber) {
+      this.pageNumber = newPageNumber;
     },
   },
 };

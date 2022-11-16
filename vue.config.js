@@ -1,6 +1,5 @@
 const { defineConfig } = require('@vue/cli-service');
 module.exports = defineConfig({
-  transpileDependencies: true,
   // devServer: {
   //   headers: {
   //     'Access-Control-Allow-Origin': '*',
@@ -11,4 +10,11 @@ module.exports = defineConfig({
   //   },
   //   proxy: 'https://api.publicapis.org/',
   // },
+  transpileDependencies: true,
+
+  pluginOptions: {
+    vuetify: {
+			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
+		}
+  }
 });
